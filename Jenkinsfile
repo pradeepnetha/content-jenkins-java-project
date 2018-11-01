@@ -18,7 +18,12 @@ pipeline {
          steps {
             sh 'ant -f build.xml -v'
          }
-      }
+         post {
+            success { 
+               archiveArtifacts artifacts: 'dist/*.jar', fingerprint: true
+            }
+          }
+        }
       stage ('deploy') {
          agent {
            label 'apache'
@@ -32,14 +37,18 @@ pipeline {
            label 'Centos'
       }
          steps {
-            sh "wget http://brandon4231.mylabserver.com/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar 
+            sh "wget http://brandon4231.mylabserver.com/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar" 
             sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
          }
       }
-   }
-post {
-   always { 
-     archiveArtifacts artifacts: 'dist/*.jar', fingerprint: true
-     }
-   }
+      stage ('Test on Debian') {
+         agent {
+           label 'openjdk:8u121-jre'
+      }
+         steps {
+            sh "wget http://brandon4231.mylabserver.com/rectangles/all/rectangle_${env.BUILD_NUMBER}.jar"
+            sh "java -jar rectangle_${env.BUILD_NUMBER}.jar 3 4"
+         }
+      }
+    }
 }
