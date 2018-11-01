@@ -7,7 +7,7 @@ pipeline {
           label 'apache'
         }
        steps {
-         sh 'ant -f build.xml -v'
+         sh 'ant -f test.xml -v'
          junit 'reports/result.xml'
          }
        }
